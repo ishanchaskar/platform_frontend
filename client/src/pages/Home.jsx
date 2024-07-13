@@ -15,8 +15,8 @@ const Home = () => {
         <Flex flex="1" direction="column" p="6">
           <Outlet /> {/* This will render nested routes */}
         </Flex>
-        <Box w="250px" p="4" bg="gray.100" borderRadius="md" boxShadow="base">
-          <Timer durationInSeconds={300} />
+        <Box bg="gray.100" borderRadius="md" boxShadow="base">
+          {/* <Timer durationInSeconds={300} /> */}
         </Box>
       </Flex>
     </Flex>

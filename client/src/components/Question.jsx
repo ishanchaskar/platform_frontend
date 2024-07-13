@@ -51,18 +51,16 @@ const Question = () => {
 
   // Effect to start the timer and reset it when needed
   useEffect(() => {
-    let timer = null;
-    if (!resetTimer) {
-      timer = setInterval(() => {
-        setTimeElapsed(prevTime => prevTime + 1); // Increment timeElapsed every second
-      }, 1000);
+    let timer;
+    if (resetTimer) {
+      setTimeElapsed(0); // Reset time elapsed
     } else {
-      setTimeElapsed(0); // Reset timeElapsed
-      setResetTimer(false); // Reset the resetTimer flag
+      timer = setInterval(() => {
+        setTimeElapsed(prevTime => prevTime + 1); // Increment timeElapsed
+      }, 1000);
     }
-
-    return () => clearInterval(timer); // Cleanup function to clear the interval
-  }, [resetTimer, currentQuestionIndex]); // Reset timer on question change or resetTimer change
+    return () => clearInterval(timer);
+  }, [resetTimer]); // Reset timer on prop change
 
   const questionText = section ? mockQuestions[section][currentQuestionIndex] : null;
   const options = section ? mockOptions[section][currentQuestionIndex] : null;
@@ -78,6 +76,10 @@ const Question = () => {
     setSelectedOption(value);
   };
 
+  const handleStopTimer = () => {
+    setResetTimer(true); // Trigger timer reset
+  };
+
   const handleSubmitAnswer = () => {
     // Logic to handle submitting the answer for the current question
     console.log(`Selected option: ${selectedOption}`);
@@ -89,7 +91,7 @@ const Question = () => {
       setAnswerSectionColor('green.100');
     }
 
-    setResetTimer(true); // Reset the timer for the next question
+    handleStopTimer(); // Reset the timer for the next question
   };
 
   const handleNextQuestion = () => {
@@ -99,6 +101,7 @@ const Question = () => {
 
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+      setResetTimer(false); // Ensure timer starts for the next question
     }
   };
 
@@ -106,6 +109,7 @@ const Question = () => {
     // Logic to handle moving to the previous question
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prevIndex => prevIndex - 1);
+      setResetTimer(false); // Ensure timer starts for the previous question
     }
   };
 
@@ -123,8 +127,8 @@ const Question = () => {
 
   return questionText ? (
     <Flex flex="1" direction="column" p="6" alignItems="center">
-      <Timer resetTimer={resetTimer} /> {/* Display the Timer component */}
-      <VStack spacing="6" align="stretch" w="100%" mt="4">
+      <Timer resetTimer={resetTimer} handleStopTimer={handleStopTimer} />
+      <VStack spacing="66" align="stretch" w="100%" mt="4">
         <Heading as="h3" size="lg" mb="4" fontWeight="normal">
           {questionText}
         </Heading>
@@ -138,6 +142,7 @@ const Question = () => {
             ))}
           </SimpleGrid>
         </RadioGroup>
+
         <Flex justify="center">
           <Button
             id="submitButton"
@@ -152,6 +157,9 @@ const Question = () => {
           >
             Submit
           </Button>
+        </Flex>
+
+        <Flex justify="space-between">
           <Button
             id="previousButton"
             onClick={handlePreviousQuestion}
@@ -179,6 +187,7 @@ const Question = () => {
             {isLastQuestion ? 'Submit All' : 'Next'}
           </Button>
         </Flex>
+
         {showExplanation && (
           <Box mt="4" p="4" bg={answerSectionColor} borderWidth="1px" borderRadius="md" textAlign="center" w="100%">
             <Text fontSize="lg" fontWeight="bold">
@@ -192,6 +201,7 @@ const Question = () => {
             </Button>
           </Box>
         )}
+
         {showDetails && (
           <>
             <Box mt="4" p="4" bg="gray.200" borderWidth="1px" borderRadius="md" textAlign="center" w="100%">
