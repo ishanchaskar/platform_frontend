@@ -1,0 +1,14 @@
+.physics-block {
+    /* Existing styles for visual presentation */
+    transition: all 0.2s ease-in-out; /* Smooth animation for 0.2 seconds */
+  }
+  
+  .physics-block.show {
+    /* Styles applied when the dropdown is open */
+    height: auto; /* Allow content to expand */
+  }
+  
+  .physics-block.hide {
+    /* Styles applied when the dropdown is closed */
+    height: 0; /* Collapse content */
+  }
